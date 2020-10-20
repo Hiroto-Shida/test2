@@ -5,72 +5,53 @@
   <title>balltest</title>
 </head>
 <body>
+  <h5 id="text" style="text-align: center;">
+    モアイをドラッグしてゴミ箱へ運んでください
+  </h5>
   <div id="app">
     <img src="new_moai.png" id="ball" width="80px" >
   </div>
   <div style="text-align: center;">
-    <img src="gomibako.png" id="gomibako" width="100px"><br>
+    <img src="gomibako.png" id="gm" width="100px"><br>
   </div>
-  <script>
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-<div style="text-align:center">
-    <table border="1" align="center">
-        <tr>
-            <td class="droppable-elem" style="width:150px;height:100px;">
-                <div class="draggable-elem" style="margin:auto; width:60px;height:60px;background-color: brown">
-                </div>
-            </td>
-            <td class="droppable-elem" style="width:150px;height:100px"></td>
-        </tr>
-    </table>
+  <script type="text/javascript">
+    var ball = document.getElementById("ball");
+    ball.style.position = "absolute";
+    ball.ondragstart = function(event){
+        return false;
+    }
+    function ChangeTxt(){
+        document.getElementById("text").innerText = "うわぁー";
+    }
+    // マウスボタンから指を離した
+    ball.onmousedown = function(event){
+        document.addEventListener("ontouchmove",onTouchMove);
+    }
 
-    <script>
-        function touchStartEvent(event) {
-            // タッチによる画面スクロールを止める
-            event.preventDefault();
+    // マウスカーソルが移動している
+    var onTouchMove = function(event){
+        var x = event.clientX;
+        var y = event.clientY;
+        var width = ball.offsetWidth;
+        var height = ball.offsetHeight;
+        ball.style.top = (y-height/2) + "px";
+        ball.style.left = (x-width/2) + "px";
+    }
+
+    // 押しているマウスボタンから指を離した
+    ball.onmouseup = function(event){
+        var x = event.clientX;
+        var y = event.clientY;
+        var width = ball.offsetWidth;
+        var height = ball.offsetHeight;
+        var gmRect = gm.getBoundingClientRect();
+        if((x>=gmRect.left && x<=(gmRect.left+gmRect.width)) && (y>=gmRect.top && y<=(gmRect.top+gmRect.height))){
+            var app = document.getElementById("app");
+            app.removeChild(ball);
+            ChangeTxt();
         }
-
-        function touchMoveEvent(event) {
-            event.preventDefault();
-
-            // ドラッグ中のアイテムをカーソルの位置に追従
-            var draggedElem = event.target;
-            var touch = event.changedTouches[0];
-            event.target.style.position = "fixed";
-            event.target.style.top = (touch.pageY - window.pageYOffset - draggedElem.offsetHeight / 2) + "px";
-            event.target.style.left = (touch.pageX - window.pageXOffset - draggedElem.offsetWidth / 2) + "px";
-        }
-
-        function touchEndEvent(event) {
-            event.preventDefault();
-
-            // ドラッグ中の操作のために変更していたスタイルを元に戻す
-            var droppedElem = event.target;
-            droppedElem.style.position = "";
-            event.target.style.top = "";
-            event.target.style.left = "";
-
-            // ドロップした位置にあるドロップ可能なエレメントに親子付けする
-            var touch = event.changedTouches[0];
-            // スクロール分を加味した座標に存在するエレメントを新しい親とする
-            var newParentElem = document.elementFromPoint(touch.pageX - window.pageXOffset, touch.pageY - window.pageYOffset);
-            if (newParentElem.className == "droppable-elem") {
-                newParentElem.appendChild(droppedElem);
-            }
-        }
-
-        {
-            // ドラッグ可能アイテムへのタッチイベントの設定
-            var draggableItems = $(".draggable-elem");
-            for (var i = 0; i < draggableItems.length; ++i) {
-                var item = draggableItems[i];
-                item.addEventListener('touchstart', touchStartEvent, false);
-                item.addEventListener('touchmove', touchMoveEvent, false);
-                item.addEventListener('touchend', touchEndEvent, false);
-            }
-        }
-    </script>
-</div>
-</script>
+        document.removeEventListener("mousemove",onMouseMove);
+    }
+  </script>
 </body>
 </html>
