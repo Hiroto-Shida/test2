@@ -20,16 +20,16 @@
     ball.ondragstart = function(event){
         return false;
     }
-    function ChangeTxt(){
-        document.getElementById("text").innerText = "うわぁー";
+    function ChangeTxt(txt){
+        document.getElementById("text").innerText = txt;
     }
     // マウスボタンから指を離した
     ball.onmousedown = function(event){
-        document.addEventListener("ontouchmove",onTouchMove);
+        document.addEventListener("mousemove",onMouseMove);
     }
 
     // マウスカーソルが移動している
-    var onTouchMove = function(event){
+    var onMouseMove = function(event){
         var x = event.clientX;
         var y = event.clientY;
         var width = ball.offsetWidth;
@@ -48,7 +48,7 @@
         if((x>=gmRect.left && x<=(gmRect.left+gmRect.width)) && (y>=gmRect.top && y<=(gmRect.top+gmRect.height))){
             var app = document.getElementById("app");
             app.removeChild(ball);
-            ChangeTxt();
+            ChangeTxt("うわーー");
         }
         document.removeEventListener("mousemove",onMouseMove);
     }
