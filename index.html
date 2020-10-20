@@ -12,34 +12,65 @@
     <img src="gomibako.png" id="gomibako" width="100px"><br>
   </div>
   <script>
-    var ball = document.getElementById("ball");
-    ball.style.position = "absolute";
-    ball.ondragstart = function(event){
-        return false;
-    }
-    ball.onmousedown = function(event){
-        document.addEventListener("mousemove",onMouseMove);
-    }
-    var onMouseMove = function(event){
-        var x = event.clientX;
-        var y = event.clientY;
-        var width = ball.offsetWidth;
-        var height = ball.offsetHeight;
-        ball.style.top = (y-height/2) + "px";
-        ball.style.left = (x-width/2) + "px";
-    }
-    ball.onmouseup = function(event){
-        var x = event.clientX;
-        var y = event.clientY;
-        var width = ball.offsetWidth;
-        var height = ball.offsetHeight;
-        var gomibakoRect = gomibako.getBoundingClientRect();
-        if((x>=gomibakoRect.left && x<=(gomibakoRect.left+gomibakoRect.width)) && (y>=gomibakoRect.top && y<=(gomibakoRect.top+gomibakoRect.height))){
-            var app = document.getElementById("app");
-            app.removeChild(ball);
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<div style="text-align:center">
+    <table border="1" align="center">
+        <tr>
+            <td class="droppable-elem" style="width:150px;height:100px;">
+                <div class="draggable-elem" style="margin:auto; width:60px;height:60px;background-color: brown">
+                </div>
+            </td>
+            <td class="droppable-elem" style="width:150px;height:100px"></td>
+        </tr>
+    </table>
+
+    <script>
+        function touchStartEvent(event) {
+            // タッチによる画面スクロールを止める
+            event.preventDefault();
         }
-        document.removeEventListener("mousemove",onMouseMove);
-    }
-  </script>
+
+        function touchMoveEvent(event) {
+            event.preventDefault();
+
+            // ドラッグ中のアイテムをカーソルの位置に追従
+            var draggedElem = event.target;
+            var touch = event.changedTouches[0];
+            event.target.style.position = "fixed";
+            event.target.style.top = (touch.pageY - window.pageYOffset - draggedElem.offsetHeight / 2) + "px";
+            event.target.style.left = (touch.pageX - window.pageXOffset - draggedElem.offsetWidth / 2) + "px";
+        }
+
+        function touchEndEvent(event) {
+            event.preventDefault();
+
+            // ドラッグ中の操作のために変更していたスタイルを元に戻す
+            var droppedElem = event.target;
+            droppedElem.style.position = "";
+            event.target.style.top = "";
+            event.target.style.left = "";
+
+            // ドロップした位置にあるドロップ可能なエレメントに親子付けする
+            var touch = event.changedTouches[0];
+            // スクロール分を加味した座標に存在するエレメントを新しい親とする
+            var newParentElem = document.elementFromPoint(touch.pageX - window.pageXOffset, touch.pageY - window.pageYOffset);
+            if (newParentElem.className == "droppable-elem") {
+                newParentElem.appendChild(droppedElem);
+            }
+        }
+
+        {
+            // ドラッグ可能アイテムへのタッチイベントの設定
+            var draggableItems = $(".draggable-elem");
+            for (var i = 0; i < draggableItems.length; ++i) {
+                var item = draggableItems[i];
+                item.addEventListener('touchstart', touchStartEvent, false);
+                item.addEventListener('touchmove', touchMoveEvent, false);
+                item.addEventListener('touchend', touchEndEvent, false);
+            }
+        }
+    </script>
+</div>
+</script>
 </body>
 </html>
